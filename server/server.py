@@ -1,7 +1,9 @@
 import logging
 from flask import Flask, json, request, Response
+from flask_cors import CORS, cross_origin
 api = Flask(__name__)
-
+cors = CORS(api)
+api.config['CORS_HEADERS'] = 'Content-Type'
 
 class State:
     def __init__(self) -> None:
@@ -39,6 +41,7 @@ state = State()
 def upload(name):
     data = request.values
     print(data)
+    print(request.host)
     success = state.add_file(name, data)
     response = Response()
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -51,19 +54,19 @@ def upload(name):
     return response, ret_code
 
 @api.route('/files/<name>', methods=['OPTIONS'])
+@cross_origin()
 def options(name):
     response = Response()
+    print(request.host)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'DELETE')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Max-Age', 86400)
     return response, 200
 
 @api.route('/files/<name>', methods=['DELETE'])
+@cross_origin()
 def delete(name):
     success = state.remove_file(name)
     response = Response()
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000/')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     if success:
         response.data = json.dumps("ok")
         ret_code = 200
