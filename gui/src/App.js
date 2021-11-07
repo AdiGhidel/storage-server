@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { useFilePicker } from 'use-file-picker';
 import React, { useEffect } from 'react';
@@ -6,6 +5,16 @@ import React, { useEffect } from 'react';
 function App() {
   return <Page />
 }
+
+const ColoredLine = ({ color }) => (
+  <hr
+      style={{
+          color: color,
+          backgroundColor: color,
+          height: 1
+      }}
+  />
+);
 
 class Page extends React.Component {
   constructor(props) {
@@ -41,15 +50,13 @@ class Page extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({selectedFile: event.target.value});
+    this.setState({ selectedFile: event.target.value });
   }
 
   deleteFile() {
     const requestOptions = {
       method: 'DELETE',
-      headers: {'Content-Type' : 'text/plain'}
     };
-    console.log(this.state.selectedFile);
     fetch('http://localhost:5000/files/' + this.state.selectedFile, requestOptions)
       .then(response => console.log(response.body));
   }
@@ -57,7 +64,11 @@ class Page extends React.Component {
   render() {
     return (
       <div>
+        <h1>Upload server GUI</h1>
+        <ColoredLine color='black' />
+        <h2>Upload</h2>
         <FileSelector />
+        <h2>List uploaded files</h2>
         <button onClick={() => {
           this.getUploadedFiles()
         }}>Get Uploaded Files </button>
@@ -67,8 +78,9 @@ class Page extends React.Component {
             </li>
           ))}
         </ul>
+        <h2>Delete files</h2>
         <input type="text" value={this.state.selectedFile} onChange={this.handleChange} />
-        <button onClick={() => {this.deleteFile()}}>Delete File </button>
+        <button onClick={() => { this.deleteFile() }}>Delete File </button>
       </div>
     );
   }
@@ -117,8 +129,11 @@ function FileSelector() {
       <button onClick={() => openFileSelector()}>Select file </button>
       <button onClick={() => clear()}>Clear</button>
       <br />
+      <br />
       Selected file:
       <br />
+      <br />
+
       {plainFiles.map(file => (
         <div key={file.name}>{file.name}</div>
       ))}{ }
