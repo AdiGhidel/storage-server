@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, json, request
+from flask import Flask, json, request, Response
 api = Flask(__name__)
 
 
@@ -38,25 +38,46 @@ state = State()
 @api.route('/files/<name>', methods=['POST'])
 def upload(name):
     data = request.values
+    print(data)
     success = state.add_file(name, data)
+    response = Response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
     if success:
-        return json.dumps("ok"), 200
+        response.data = json.dumps("ok")
+        ret_code = 200
     else:
-        return json.dumps("not added"), 500
+       response.data = json.dumps("not added")
+       ret_code = 500
+    return response, ret_code
 
+@api.route('/files/<name>', methods=['OPTIONS'])
+def options(name):
+    response = Response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'DELETE')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Max-Age', 86400)
+    return response, 200
 
 @api.route('/files/<name>', methods=['DELETE'])
 def delete(name):
     success = state.remove_file(name)
+    response = Response()
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000/')
     if success:
-        return json.dumps("ok"), 200
+        response.data = json.dumps("ok")
+        ret_code = 200
     else:
-        return json.dumps("not added"), 500
-
+       response.data = json.dumps("not deleted")
+       ret_code = 500
+    return response, ret_code
 
 @api.route('/files', methods=['GET'])
 def list():
-    return json.dumps(state.list_files()), 200
+    response = Response()
+    response.data = json.dumps(state.list_files())
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 200
 
 if __name__ == '__main__':
     api.run()
