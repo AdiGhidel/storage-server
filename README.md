@@ -40,6 +40,7 @@ Built with:
 - The front-end was done in React
 - It supports the basic requirements, but nothing more
 - It was my first attempt at doing front-end so it most likely is not using the well known practices. This is just manually tested
+- The dependencies should be managed by yarn / package.json
 
 
 
